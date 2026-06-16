@@ -2,15 +2,15 @@
 
 ## Recommendation
 
-Start with this three-layer setup:
+Use a small, layered memory system:
 
-1. Hermes built-in memory: `MEMORY.md` and `USER.md`.
-2. One external provider: Holographic.
-3. Obsidian as an explicit, curated knowledge base, not as raw unrestricted memory.
+1. Hermes built-in memory: `USER.md` and a very small `MEMORY.md`.
+2. Holographic as the first external recall provider.
+3. Obsidian as the human-readable, shared knowledge garden.
 
-This fits the goals best because privacy, local-first operation, low setup cost, and evolvability matter more right now than benchmark chasing or cloud-scale memory.
+This keeps the setup local-first, inspectable where it matters, and simple enough to maintain.
 
-Hermes' own docs say built-in memory remains active even when an external memory provider is enabled, and only one external provider can be active at a time. That means the provider choice should be treated as the deeper recall layer, not as the only memory system.
+Hermes built-in memory remains active even when an external provider is enabled, and only one external provider can be active at a time. Treat the provider as deeper recall, not as the whole memory system.
 
 Sources:
 
@@ -21,75 +21,150 @@ Sources:
 - Mem0 OSS docs: https://docs.mem0.ai/open-source/overview
 - OpenViking docs: https://docs.openviking.ai/
 - ByteRover Hermes docs: https://docs.byterover.dev/autonomous-agents/hermes
+- Ziwen Xu Obsidian/Codex vault post: https://x.com/ziwenxu_/status/2053241837453029439
 
 ## Memory Layers
 
-### Hot Memory
+### USER.md
 
 Use `USER.md` for stable facts about you:
 
-- Communication preferences.
-- How much pushback you want.
-- Your timezone and practical defaults.
-- Long-lived preferences around privacy, planning, coding, and learning.
+- communication preferences
+- technical comfort level
+- long-lived privacy preferences
+- how much pushback you want
+- durable preferences around planning, coding, learning, and reflection
 
-Use `MEMORY.md` for stable operational context:
+### MEMORY.md
 
-- Current important projects.
-- Tools, machines, repos, and conventions.
-- Repeated lessons the agent should apply.
-- A short pointer to where approved Obsidian context lives.
+Use `MEMORY.md` only for tiny, always-relevant operational context.
 
-Do not put raw journal-like material here. These files are injected into the prompt, so they should be small, deliberate, and high-trust.
+Good examples:
 
-### External Provider
+- a primary host or repo that affects most sessions
+- a broad pointer to where approved knowledge lives
+- a rule that prevents repeated mistakes across many tasks
+
+Avoid narrow implementation details, old task outcomes, PR numbers, ports, temporary decisions, and facts that are only useful for one project.
+
+These files are injected into the prompt, so they should stay small, deliberate, and high-trust.
+
+### Holographic
 
 Use Holographic first.
 
 Why:
 
-- It is local SQLite.
-- It has no required external service.
-- Hermes documents it as having FTS5 search, trust scoring, and HRR-style compositional recall.
-- Auto-extraction is off by default, which is good for a privacy-conscious first setup.
+- local SQLite
+- no required external service
+- FTS5 search, trust scoring, and compositional recall
+- auto-extraction can stay off at the beginning
 
 Suggested posture:
 
-- Keep `auto_extract` off at the beginning.
-- Ask the agent to store facts explicitly.
-- Use feedback when recall is helpful or wrong.
-- Review/delete facts periodically.
+- keep `auto_extract` off at first
+- ask the agent to store facts explicitly
+- use feedback when recall is helpful or wrong
+- review/delete facts periodically
 
-The main weakness is inspectability. Holographic is not a clean human-edited markdown knowledge tree. If you want to hand-edit memory heavily, ByteRover is the better experiment.
+The main weakness is inspectability. Holographic is not a clean human-edited Markdown tree. If you often want to browse or hand-edit memories, test ByteRover next.
 
 ### Obsidian
 
-Keep Obsidian as the durable personal knowledge base. It already matches your taste: markdown, links, areas, projects, and manual editing.
+Use Obsidian as the durable shared knowledge base: Markdown notes that both you and Hermes can read and edit.
 
-Do not expose the entire vault. Keep a whitelist boundary:
+It is for:
 
-- Allowed: `areas/tech`, `areas/math`, `areas/workflows`, selected `projects/*`, books/notes you are comfortable sharing.
-- Excluded: journaling graph, private life logs, raw emotional processing, sensitive personal records.
+- world facts and reference notes
+- project context and decisions
+- operating manuals
+- values/rationale that should remain human-editable
+- longer-form knowledge that should not live in always-on memory
 
-Add an agent-facing folder such as:
+Do not expose the entire vault by default. Keep an agent-safe boundary.
+
+Allowed examples:
+
+- selected tech/math/workflow areas
+- selected project notes
+- explicit agent context notes
+- reference material you are comfortable sharing
+
+Excluded by default:
+
+- journaling graph
+- private life logs
+- raw emotional processing
+- sensitive personal records
+
+Your vault already roughly follows PARA. Keep that structure. Do not migrate the whole vault into a machine-first layout just because an agent will read it.
+
+A simple shape is enough:
 
 ```text
-Sync/wiki/areas/ai_agent_context/
-├── index.md
-├── values.md
-├── current-projects.md
-├── privacy-boundaries.md
-├── decision-log.md
-└── recurring-workflows.md
+AGENTS.md          # short map for Hermes
+Inbox/             # raw captures and things to process later
+Projects/          # active project notes and working context
+Areas/             # ongoing responsibilities and systems
+Resources/         # reference notes and world facts
+Archive/           # inactive material
 ```
 
-The agent can read from this folder freely and propose edits elsewhere only when asked.
+The folder names can match the vault's existing conventions. The important part is the role of each area, not exact capitalization.
+
+Add a small vault-root `AGENTS.md` that explains:
+
+- what the vault is for
+- which folders Hermes may read/write by default
+- where shared facts about the world belong
+- how to update notes safely
+- when Hermes should ask instead of guessing
+
+Keep `AGENTS.md` as a map, not a second vault.
+
+## World Facts
+
+For shared facts about the world, prefer normal Markdown notes in `Resources/` or the relevant project/area folder.
+
+A good fact note has:
+
+- a clear title
+- the fact or claim in plain language
+- source links when available
+- date/context if freshness matters
+- links to related notes
+
+Avoid over-structuring. If a fact needs querying, scoring, or deduplication, it may belong in Holographic or another app-specific store instead of hand-maintained Markdown.
+
+## Syncthing
+
+Syncthing is a good fit because Obsidian is just files, but conflicts are possible.
+
+Conflicts can happen when:
+
+- the same note is edited on two devices before either syncs
+- Hermes rewrites a note while you are editing it elsewhere
+- Obsidian plugins update JSON/workspace files on multiple devices
+- mobile edits happen offline, then sync later
+
+Keep conflict risk low:
+
+- prefer small append-style or targeted edits over whole-file rewrites
+- have Hermes read the latest file immediately before patching
+- avoid agent-led bulk reorganizations without a plan
+- sync notes and important config, but be cautious with plugin state
+- consider excluding generated/ephemeral files such as `.obsidian/workspace*.json`
+- let Syncthing create conflict copies rather than trying to auto-merge them blindly
+
+Simple agent rule:
+
+> Hermes may edit one note at a time after reading the latest version. For large reorganizations, draft a plan first.
 
 ## Provider Comparison
 
 | Provider | Best Fit | Pros | Cons | My Take |
 | --- | --- | --- | --- | --- |
-| Holographic | Local private recall | SQLite, no service, fast, trust scoring, low setup | Less transparent than markdown; newer/unusual model | Best first choice |
+| Holographic | Local private recall | SQLite, no service, fast, trust scoring, low setup | Less transparent than Markdown; newer/unusual model | Best first choice |
 | ByteRover | Inspectable developer memory | Local-first, hierarchical tree, CLI, optional sync, more human-curatable | Extra CLI; still another system beside Obsidian | Best second experiment |
 | Hindsight | Strong structured recall | Knowledge graph, entity resolution, local or cloud, strong benchmark story | Embedded Postgres and LLM dependency; more moving parts | Good later if recall quality matters more than simplicity |
 | OpenViking | Structured context database | Filesystem-like hierarchy, tiered L0/L1/L2 loading, self-hosted | Requires running service; AGPL; likely operational overhead | Interesting but not day one |
@@ -102,66 +177,27 @@ The agent can read from this folder freely and propose edits elsewhere only when
 
 Use these as design rules:
 
-- Explicit scope: The agent only reads approved folders unless you ask otherwise.
-- Memory classes: mark facts as `public`, `private-but-usable`, `sensitive`, or `never-store`.
-- Source labels: every durable memory should say where it came from when possible.
-- Expiry: some facts should expire, especially preferences, emotional states, and temporary project constraints.
-- Review cadence: weekly for active projects, monthly for user profile and values.
-- No raw journaling ingestion: the agent may help reflect if you paste text, but it should not retain the raw text unless explicitly asked.
-
-## Obsidian Structure Thoughts
-
-Your current PARA-inspired structure is good enough. I would not migrate the whole vault now.
-
-I would make two small changes:
-
-1. Add an agent-approved context area.
-2. Add lightweight project index files.
-
-Suggested project file:
-
-```markdown
-# Project: learning_zig
-
-## Outcome
-
-What success looks like.
-
-## Current State
-
-What is true right now.
-
-## Next Moves
-
-- One concrete next action.
-- One follow-up.
-
-## Decisions
-
-- YYYY-MM-DD: Decision and reason.
-
-## Open Questions
-
-- Things the agent should help clarify.
-```
-
-This gives Hermes useful structure without forcing the whole vault into a rigid system.
+- explicit scope: the agent only reads approved folders unless asked otherwise
+- memory classes: `public`, `private-but-usable`, `sensitive`, `never-store`
+- source labels: durable memory should say where it came from when possible
+- expiry: temporary facts should expire, especially preferences, emotional states, and project constraints
+- review cadence: weekly for active projects, monthly for user profile and values
+- no raw journaling ingestion: the agent may help reflect if text is pasted, but should not retain the raw text unless explicitly asked
 
 ## Decision
 
 Default agent:
 
-- Built-in `MEMORY.md`/`USER.md`: enabled.
+- Built-in `USER.md`/`MEMORY.md`: enabled.
 - External provider: Holographic.
-- Obsidian: read/write only within an approved context folder by default.
+- Obsidian: read/write only within approved scope by default.
 - Profiles: stay with one default profile until a separate coding or automation agent has a clear reason to exist.
 
 Exit criteria for switching away from Holographic:
 
-- Recall feels opaque and hard to correct.
-- It stores too much low-value context.
-- You often want to browse/edit memories manually.
-- Project memory wants a visible hierarchy.
+- recall feels opaque and hard to correct
+- it stores too much low-value context
+- memories need frequent manual browsing/editing
+- project memory wants a visible hierarchy
 
 If that happens, test ByteRover next.
-

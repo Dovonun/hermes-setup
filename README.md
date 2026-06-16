@@ -16,7 +16,12 @@ Start here:
 
 ## Current Recommendation
 
-Use Hermes' built-in `MEMORY.md` and `USER.md` as the hot, always-in-context layer, then start with the Holographic provider as the single external provider.
+Use a small layered setup:
 
-Keep Obsidian as the source-of-truth knowledge garden, but expose only an agent-safe subset to Hermes. Do not give the default agent direct access to private journaling. If the Holographic layer feels too opaque after a few weeks, test ByteRover next because it is more inspectable and markdown-like.
+- `USER.md` for stable preferences and personal operating style.
+- `MEMORY.md` only for tiny always-relevant operational context.
+- Holographic as the first external recall provider.
+- Obsidian as the human-readable knowledge garden and shared source of truth for notes, world facts, decisions, and project context.
+
+Expose only an agent-safe subset of Obsidian to Hermes. Do not give the default agent direct access to private journaling. If Holographic feels too opaque after a few weeks, test ByteRover next because it is more inspectable and Markdown-like.
 

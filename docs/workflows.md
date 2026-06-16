@@ -50,6 +50,64 @@ The agent should ask:
 
 The point is not motivational language. The point is regaining altitude.
 
+## Capture Workflow
+
+Capture should be cheap. Filing should not become another job.
+
+Use Obsidian `Inbox/` as the default landing zone for material that may become useful later:
+
+- saved posts or bookmarks
+- article links
+- technical docs
+- video transcripts
+- voice notes
+- rough ideas
+
+The agent may help turn raw captures into concise Markdown notes, but it should keep source links and avoid copying engagement bait or low-value commentary.
+
+A useful capture note answers:
+
+- What is the durable idea?
+- Why might it matter?
+- Where did it come from?
+- Does it connect to a current project, area, or world-fact note?
+
+Only move a note out of `Inbox/` when there is an obvious home. Otherwise leave it there or archive it.
+
+## Review Workflow
+
+Light automation is useful. Self-modifying knowledge systems should still be conservative.
+
+Daily review can:
+
+- scan new `Inbox/` notes
+- identify one or two useful patterns
+- flag contradictions with current projects or decisions
+- suggest the single most useful next action
+- draft a short daily brief
+
+Weekly review can:
+
+- summarize what changed
+- identify recurring themes
+- propose cleanup or structure changes
+- update project indexes or decision logs
+- suggest changes to vault `AGENTS.md`
+
+Weekly review should propose structural changes before applying them. Do not let the agent rewrite the vault map just because it found a new topic.
+
+## Agent Guardrails
+
+Use these rules when Hermes works from stored context:
+
+- Cite the note or source when making a claim based on the vault.
+- If the vault has no evidence, say so instead of pretending.
+- If a task contradicts an older note, flag the conflict and ask for a tie-breaker.
+- Before coding or making broad changes, write a short plan based on current context.
+- Prefer small edits and patches over broad rewrites.
+
+This prevents the vault from making the agent overconfident.
+
 ## Kanban
 
 Use Kanban for project execution, not identity or values.
@@ -97,24 +155,24 @@ At session end, ask:
 
 - What did we learn that should persist?
 - Is this a fact, preference, decision, pattern, or temporary state?
-- Where should it live: `USER.md`, `MEMORY.md`, provider memory, project note, or nowhere?
+- Where should it live: `USER.md`, `MEMORY.md`, Holographic, Obsidian, a skill, session history, or nowhere?
 - Is it sensitive?
 - Should it expire?
 
 Default storage rule:
 
 - `USER.md`: stable preferences and durable personal operating style.
-- `MEMORY.md`: stable environment/project facts.
+- `MEMORY.md`: only tiny always-relevant operational facts.
 - Holographic: searchable facts and patterns that may be useful later.
-- Obsidian: human-readable knowledge, decisions, and project state.
+- Obsidian: human-readable knowledge, world facts, decisions, and project state.
+- Skills: reusable procedures and troubleshooting workflows.
 - Nowhere: raw vents, temporary emotions, speculative guesses, private material.
 
 ## Questions To Answer Next
 
-- What parts of the Obsidian vault should Hermes be allowed to read by default?
-- Should Hermes be allowed to write to project notes, or only propose patches?
+- What exact Obsidian folders should Hermes read by default?
+- Should Hermes write directly to approved project notes, or only propose patches?
 - Which private categories are hard `never-store`?
 - How much pushback do you want when your stated plan conflicts with your values?
 - Do you want a weekly review ritual with the agent?
 - What are the 3-5 long-term goals Hermes should keep visible?
-
